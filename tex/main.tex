@@ -47,9 +47,56 @@
 
 
 
-\section{Background}
+\section{Task}
 
-The FIRAS experiment ...
+Analyse the
+\href{https://lambda.gsfc.nasa.gov/data/cobe/firas/monopole_spec/firas_monopole_spec_v1.txt}{FIRAS data set}.
+It is the average spectrum of the sky as measured by the FIRAS experiment, which is considered to be a near-perfect blackbody, given by the Planck blackbody law.
+
+Estimate the temperature of the blackbody and the uncertainty of the temperature. One important thing to note is the non-standard frequency units, reported in inverse-centimetres.
+
+We also ask that you perform the analysis using as few external packages as possible, for example avoiding the use of \texttt{scipy.minimize} or other
+``black box'' routines.
+
+
+
+
+
+\section{Data Set}
+
+The data set contains five sets of data points.
+
+\subsection{Frequency}
+
+The frequency is given in units of inverse-centimetres (cm\(^{-1}\)). If desired this can be converted to Hertz through multiplying with \(100 c\), where \(c \approx 3 \cdot 10^8\) m/s is the speed of light.
+
+
+
+\subsection{Spectrum}
+
+Intensity, as obtained from Planck's blackbody law, given in units of MegaJanskys per steradian (MJy / sr).
+
+
+
+
+
+\section{Planck's law of blackbody radiation}
+
+Reads
+\begin{equation}
+  B(\nu, T)
+    = \frac{2 h \nu^3}{c^2} \frac{1}{e^{h \nu / (k_B T)} - 1}.
+\end{equation}
+In SI units it is expressed as
+\begin{equation}
+  \text{J} \;\text{m}^{-2} \;\text{sr}^{-1}
+    = \text{W} \; \text{m}^{-2} \; \text{sr}^{-1} \; \text{Hz}^{-1}.
+\end{equation}
+To convert into MJy / sr multiply with
+\begin{itemize}
+  \item \(10^{26}\) for the Janskys (\(1 \text{Jy} = 10^{-26} \text{W} \; \text{m}^{-2} \;\text{Hz}^{-1}\)) and
+  \item \(10^{-6}\) for the Mega.
+\end{itemize}
 
 
 
