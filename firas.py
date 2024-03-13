@@ -57,23 +57,23 @@ def planck_bb(frequency: float, temperature: float):
     return factor / (np.exp(PLANCK_BB_FACTOR_2*frequency/temperature) - 1)
 
 
-def plot_spectrum(temperature: float):
+def plot_spectrum():
     frequencies, monopole_spectrum, *_ = load()
 
-    planck = planck_bb(frequencies, temperature)
-
     fig, ax = plt.subplots()
-    ax.plot(
-        frequencies,
-        planck,
-        label=f'{temperature:.3f} K Planck BB'
-    )
+    for T in [2.6, 2.7, 2.725, 2.8]:
+        planck = planck_bb(frequencies, T)
+        ax.plot(
+            frequencies,
+            planck,
+            label=f'{T:.3f} K Planck BB'
+        )
     ax.scatter(
         frequencies,
         monopole_spectrum,
         marker='+',
         color='r',
-        label='Spectrum'
+        label='Observed spectrum'
     )
     plots.set_ax_info(
         ax,
@@ -82,8 +82,7 @@ def plot_spectrum(temperature: float):
     )
     ax.grid(True)
     fig.tight_layout()
-    file_id = f'{temperature:.3f}'.replace('.', '_')
-    fig.savefig(f'results/spectrum-{file_id}.pdf')
+    fig.savefig('results/spectrum.pdf')
     plt.close(fig)
 
 
@@ -95,26 +94,28 @@ def chi_squared(observed, expected, sigma) -> float:
 def plot_chi_squared_with_temperature():
     frequencies, monopole_spectrum, _, sigma, _ = load()
 
-    temperatures = np.linspace(2.6, 2.8, 11)
-    chi_sq = np.zeros_like(temperatures)
+    for temperatures, filename in (
+        (np.linspace(2.6, 2.8, 11), 'results/chi-squared.pdf'),
+        (np.linspace(2.7245, 2.7255, 11), 'results/chi-squared-close.pdf')
+    ):
+        chi_sq = np.zeros_like(temperatures)
 
-    for i, temperature in enumerate(temperatures):
-        plot_spectrum(temperature)
-        planck = planck_bb(frequencies, temperature)
-        chi_sq[i] = chi_squared(monopole_spectrum, planck, sigma)
+        for i, temperature in enumerate(temperatures):
+            planck = planck_bb(frequencies, temperature)
+            chi_sq[i] = chi_squared(monopole_spectrum, planck, sigma)
 
-    fig, ax = plt.subplots()
-    ax.plot(temperatures, chi_sq)
-    plots.set_ax_info(
-        ax,
-        xlabel='Temperature, K',
-        ylabel=r'$\chi^2$',
-        legend=False,
-    )
-    ax.grid(True)
-    fig.tight_layout()
-    fig.savefig('results/chi-squared.pdf')
-    plt.close(fig)
+        fig, ax = plt.subplots()
+        ax.plot(temperatures, chi_sq)
+        plots.set_ax_info(
+            ax,
+            xlabel='Temperature, K',
+            ylabel=r'$\chi^2$',
+            legend=False,
+        )
+        ax.grid(True)
+        fig.tight_layout()
+        fig.savefig(filename)
+        plt.close(fig)
 
 
 def find_best_fit():
@@ -159,12 +160,12 @@ def confidence_interval(best_chi_sq):
         current = nxt
         T += dT
 
-    print('Heuristic 95 % confidence interval for T: '
+    print('95 % confidence interval for T: '
           f'[{confidence_limits[0]:.6f} K, {confidence_limits[1]:.6f} K]')
 
 
 def main():
-    plot_spectrum(2.725)
+    plot_spectrum()
     plot_chi_squared_with_temperature()
     _, chi_sq = find_best_fit()
     confidence_interval(chi_sq)
