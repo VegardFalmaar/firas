@@ -121,7 +121,7 @@ def find_best_fit():
     frequencies, monopole_spectrum, _, sigma, _ = load()
 
     T = 2.7
-    dT = 0.0001
+    dT = 0.000001
 
     current = chi_squared(monopole_spectrum, planck_bb(frequencies, T), sigma)
     nxt = chi_squared(monopole_spectrum, planck_bb(frequencies, T + dT), sigma)
@@ -134,14 +134,40 @@ def find_best_fit():
             planck_bb(frequencies, T + dT),
             sigma
         )
-    print(f'Best fit temperature: {T:.4f} K')
-    print(f'Corresponding chi-squared: {current:.4e}')
+
+    print(f'Best fit temperature: {T:.5f} K')
+    print(f'Corresponding chi-squared: {current:.5f}')
+
+    return T, current
+
+
+def confidence_interval(best_chi_sq):
+    freq, spectrum, _, sigma, _ = load()
+
+    T = 2.7
+    dT = 0.000001
+
+    confidence_limits = []
+    chi_sq_limit = best_chi_sq + 4
+
+    current = chi_squared(spectrum, planck_bb(freq, T), sigma)
+
+    while len(confidence_limits) < 2:
+        nxt = chi_squared(spectrum, planck_bb(freq, T + dT), sigma)
+        if (current - chi_sq_limit) * (nxt - chi_sq_limit) < 0.0:
+            confidence_limits.append(T + 0.5*dT)
+        current = nxt
+        T += dT
+
+    print('Heuristic 95 % confidence interval for T: '
+          f'[{confidence_limits[0]:.6f} K, {confidence_limits[1]:.6f} K]')
 
 
 def main():
     plot_spectrum(2.725)
     plot_chi_squared_with_temperature()
-    find_best_fit()
+    _, chi_sq = find_best_fit()
+    confidence_interval(chi_sq)
 
 
 if __name__ == '__main__':

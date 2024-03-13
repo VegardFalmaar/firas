@@ -64,17 +64,23 @@ We also ask that you perform the analysis using as few external packages as poss
 
 \section{Data Set}
 
-The data set contains five sets of data points.
+The data set contains five sets of data points, each with 43 samples.
 
-\subsection{Frequency}
+\subsection*{1: Frequency}
 
 The frequency is given in units of inverse-centimetres (cm\(^{-1}\)). If desired this can be converted to Hertz through multiplying with \(100 c\), where \(c \approx 3 \cdot 10^8\) m/s is the speed of light.
 
 
 
-\subsection{Spectrum}
+\subsection*{2: Spectrum}
 
 Intensity, as obtained from Planck's blackbody law, given in units of MegaJanskys per steradian (MJy / sr).
+
+
+
+\subsection*{4: Spectrum uncertainty}
+
+The 1-\(\sigma\) uncertainty in the measurement of the monopole spectrum, given in units of kiloJanskys per steradian (kJy / sr).
 
 
 
@@ -82,8 +88,9 @@ Intensity, as obtained from Planck's blackbody law, given in units of MegaJansky
 
 \section{Planck's law of blackbody radiation}
 
-Reads
+It reads
 \begin{equation}
+  \label{eq:Planck}
   B(\nu, T)
     = \frac{2 h \nu^3}{c^2} \frac{1}{e^{h \nu / (k_B T)} - 1}.
 \end{equation}
@@ -97,6 +104,27 @@ To convert into MJy / sr multiply with
   \item \(10^{26}\) for the Janskys (\(1 \text{Jy} = 10^{-26} \text{W} \; \text{m}^{-2} \;\text{Hz}^{-1}\)) and
   \item \(10^{-6}\) for the Mega.
 \end{itemize}
+
+
+
+
+
+\section{Temperature estimate}
+
+To estimate the temperature of the blackbody radiation we would like to fit \eqref{eq:Planck} to the observed spectrum by finding the optimal value of \(T\). To quantify the deviance I have used
+\begin{equation}
+  \chi^2(T)
+    = \sum_i \frac{(\tilde B_i - B(\nu_i, T))^2}{\sigma_i^2},
+\end{equation}
+where \(\tilde B_i\) is the observed spectrum at frequency \(\nu_i\) with uncertainty \(\sigma_i\).
+
+To find the optimal value of \(T\) I have done a simple `grid search' to find the minimum value of \(\chi^2(T)\). The value obtained is \(T_\text{opt} = 2.72502\) K with a corresponding \(\chi^2\)-value of 45.09834.
+
+To quantify the uncertainty of \(T\) I have used a simple heuristic for the 95 \% confidence interval of finding the values of \(T\) which lie in the region
+\(\chi^2(T) < \chi^2(T_\text{opt}) + 4\).
+The obtained confidence interval is
+\([2.72500 \text{ K}, 2.72503 \text{ K}]\),
+a quite short interval which seems to me to be too optimistic. I was unable to set aside the time to do a more rigorous analysis, in particular I would like to derive a more exact number than four in the condition on \(\chi^2\) in the confidence interval.
 
 
 
